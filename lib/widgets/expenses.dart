@@ -2,6 +2,7 @@ import 'package:expense_tracker2/widgets/expenses_list/expenses_list.dart';
 import 'package:expense_tracker2/widgets/new_expense.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker2/model/expense.dart';
+import 'package:expense_tracker2/widgets/chart/chart.dart';
 
 class Expenses extends StatefulWidget {
   const Expenses({Key? key}) : super(key: key);
@@ -46,6 +47,7 @@ class _ExpensesState extends State<Expenses> {
       _registeredExpenses.remove(expense);
     });
 
+    ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: const Text("Expense Deleted"),
       duration: const Duration(seconds: 4),
@@ -70,7 +72,7 @@ class _ExpensesState extends State<Expenses> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Flutter Expense Tracker"),
+        title: const Text("Expense Tracker"),
         actions: [
           IconButton(
               onPressed: () {
@@ -81,6 +83,7 @@ class _ExpensesState extends State<Expenses> {
       ),
       body: Column(
         children: [
+          Chart(expenses: _registeredExpenses),
           Expanded(
             child: mainContent,
           ),
