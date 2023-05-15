@@ -3,7 +3,6 @@ import 'package:expense_tracker2/widgets/expenses.dart';
 
 var kColorScheme = ColorScheme.fromSeed(seedColor: Colors.purpleAccent);
 
-
 void main() {
   runApp(const MyApp());
 }
