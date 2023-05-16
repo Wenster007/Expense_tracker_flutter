@@ -25,9 +25,16 @@ class _ExpensesState extends State<Expenses> {
         category: Category.leisure),
   ];
 
+  List<Expense> _currentActiveExpenseList = [];
+
+  _ExpensesState() {
+    _currentActiveExpenseList = _registeredExpenses;
+  }
+
   void _addExpense(Expense expense) {
     setState(() {
       _registeredExpenses.add(expense);
+      _addSortedExpense(expense);
     });
   }
 
@@ -45,18 +52,60 @@ class _ExpensesState extends State<Expenses> {
 
     setState(() {
       _registeredExpenses.remove(expense);
+      _removeSortedExpense(expense);
     });
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: const Text("Expense Deleted"),
       duration: const Duration(seconds: 4),
-      action: SnackBarAction(label: "Undo", onPressed: () {
-        setState(() {
-          _registeredExpenses.insert(expenseIndex, expense);
-        });
-      }),
+      action: SnackBarAction(
+          label: "Undo",
+          onPressed: () {
+            setState(() {
+              _registeredExpenses.insert(expenseIndex, expense);
+            });
+          }),
     ));
+  }
+
+  List<Expense> get _sortedExpenseList {
+    final List<Expense> sortedExpenseAscendingList =
+        List.from(_registeredExpenses);
+
+    sortedExpenseAscendingList.sort((a, b) => a.date.compareTo(b.date));
+
+    return sortedExpenseAscendingList;
+  }
+
+  void _addSortedExpense(Expense expense) {
+    if (_currentActiveExpenseList != _registeredExpenses) {
+      _currentActiveExpenseList = _sortedExpenseList;
+    }
+  }
+
+  void _removeSortedExpense(Expense expense) {
+    if (_currentActiveExpenseList != _registeredExpenses) {
+      _currentActiveExpenseList = _sortedExpenseList;
+    }
+  }
+
+  void _toggleExpenseList() {
+    setState(() {
+      if (_currentActiveExpenseList == _registeredExpenses) {
+        _currentActiveExpenseList = _sortedExpenseList;
+
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Sorted In Date Order"),
+            duration: Duration(seconds: 4),
+          ),
+        );
+      } else {
+        _currentActiveExpenseList = _registeredExpenses;
+      }
+    });
   }
 
   @override
@@ -65,7 +114,7 @@ class _ExpensesState extends State<Expenses> {
 
     if (_registeredExpenses.isNotEmpty) {
       mainContent = ExpensesList(
-        expenses: _registeredExpenses,
+        expenses: _currentActiveExpenseList,
         removeExpense: _removeExpense,
       );
     }
@@ -84,6 +133,18 @@ class _ExpensesState extends State<Expenses> {
       body: Column(
         children: [
           Chart(expenses: _registeredExpenses),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Row(
+              children: [
+                const Spacer(),
+                IconButton(
+                  onPressed: _toggleExpenseList,
+                  icon: const Icon(Icons.sort),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: mainContent,
           ),
