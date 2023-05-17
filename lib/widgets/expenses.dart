@@ -1,5 +1,6 @@
 import 'package:expense_tracker2/widgets/expenses_list/expenses_list.dart';
 import 'package:expense_tracker2/widgets/new_expense.dart';
+import 'package:expense_tracker2/widgets/underlined_button.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker2/model/expense.dart';
 import 'package:expense_tracker2/widgets/chart/chart.dart';
@@ -64,6 +65,7 @@ class _ExpensesState extends State<Expenses> {
           onPressed: () {
             setState(() {
               _registeredExpenses.insert(expenseIndex, expense);
+              _addSortedExpense(expense);
             });
           }),
     ));
@@ -108,6 +110,7 @@ class _ExpensesState extends State<Expenses> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     Widget mainContent = const Center(child: Text("No Expenses Found!"));
@@ -133,21 +136,35 @@ class _ExpensesState extends State<Expenses> {
       body: Column(
         children: [
           Chart(expenses: _registeredExpenses),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Row(
-              children: [
-                const Spacer(),
-                IconButton(
-                  onPressed: _toggleExpenseList,
-                  icon: const Icon(Icons.sort),
-                ),
-              ],
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: UnderlinedButton(onPressed: () {
+                }, text: "Expenses", currentState: true),
+              ),
+              Expanded(child: UnderlinedButton(onPressed: () {
+              }, text: "Summary", currentState: false,))
+            ],
           ),
           Expanded(
-            child: mainContent,
-          ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Row(
+                    children: [
+                      const Spacer(),
+                      IconButton(
+                        onPressed: _toggleExpenseList,
+                        icon: const Icon(Icons.sort),
+                      ),
+                    ],
+                  ),
+                ),
+                Flexible(child: mainContent),
+              ],
+            ),
+          )
         ],
       ),
     );
