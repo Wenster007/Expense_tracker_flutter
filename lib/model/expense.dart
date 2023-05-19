@@ -27,9 +27,12 @@ class Expense {
       required this.category})
       : id = uuid.v4();
 
+
   String get formattedDateTime {
     return DateFormat('dd/MM/yy').format(date);
   }
+
+
 }
 
 class ExpenseBucket {

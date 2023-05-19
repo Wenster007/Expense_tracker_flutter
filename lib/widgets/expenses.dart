@@ -1,6 +1,7 @@
+import 'package:expense_tracker2/widgets/buttons_row.dart';
 import 'package:expense_tracker2/widgets/expenses_list/expenses_list.dart';
 import 'package:expense_tracker2/widgets/new_expense.dart';
-import 'package:expense_tracker2/widgets/underlined_button.dart';
+import 'package:expense_tracker2/widgets/total/total_list.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker2/model/expense.dart';
 import 'package:expense_tracker2/widgets/chart/chart.dart';
@@ -27,9 +28,18 @@ class _ExpensesState extends State<Expenses> {
   ];
 
   List<Expense> _currentActiveExpenseList = [];
+  bool active1 = true;
+  late Widget currentButton;
 
   _ExpensesState() {
     _currentActiveExpenseList = _registeredExpenses;
+  }
+
+  @override
+  void initState() {
+    currentButton = ButtonRow(
+        onExpenseClick: _onExpenseButton, onSummaryClick: _onSummaryButtons,);
+    super.initState();
   }
 
   void _addExpense(Expense expense) {
@@ -110,6 +120,39 @@ class _ExpensesState extends State<Expenses> {
     });
   }
 
+  //this function is the functionality of the expense button.
+  void _onExpenseButton() {
+    if (active1 == false) {
+      active1 = true;
+    }
+
+    setState(() {
+      currentButton = ButtonRow(
+        onExpenseClick: _onExpenseButton,onSummaryClick: _onSummaryButtons,
+      );
+    });
+  }
+
+  void _onSummaryButtons() {
+    if (active1 == true) {
+      active1 = false;
+    }
+
+    setState(() {
+      currentButton = ButtonRow(onExpenseClick: _onExpenseButton, onSummaryClick: _onSummaryButtons);
+    });
+
+  }
+
+  double getTotalExpense(List<Expense> expenses) {
+    double sum = 0;
+
+    for (var expense in expenses) {
+      sum = sum + expense.amount;
+    }
+
+    return sum;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,35 +179,59 @@ class _ExpensesState extends State<Expenses> {
       body: Column(
         children: [
           Chart(expenses: _registeredExpenses),
-          Row(
-            children: [
-              Expanded(
-                child: UnderlinedButton(onPressed: () {
-                }, text: "Expenses", currentState: true),
-              ),
-              Expanded(child: UnderlinedButton(onPressed: () {
-              }, text: "Summary", currentState: false,))
-            ],
+          Container(
+            child: currentButton,
           ),
           Expanded(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Row(
+            child: (active1 == true)
+                ? Column(
                     children: [
-                      const Spacer(),
-                      IconButton(
-                        onPressed: _toggleExpenseList,
-                        icon: const Icon(Icons.sort),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: Row(
+                          children: [
+                            const Spacer(),
+                            IconButton(
+                              onPressed: _toggleExpenseList,
+                              icon: const Icon(Icons.sort),
+                            ),
+                          ],
+                        ),
                       ),
+                      Flexible(child: mainContent),
                     ],
+                  )
+                : Container(
+                    margin: const EdgeInsets.all(25),
+                    width: double.infinity,
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Column(
+                        children: [
+                          const Text("Total Expense"),
+                          const SizedBox(height: 30,),
+                          Row(
+                            children: const [
+                              Expanded(child: Text("Expenses List: ",),),
+                              Expanded(child: Text("Total",)),
+                            ],
+                          ),
+                          const SizedBox(height: 10,),
+                          Flexible(
+                            child: Row(
+                              children: [
+                                Expanded(child: TotalList(expenses: _currentActiveExpenseList),),
+                                Expanded(child: Container(alignment: Alignment.topLeft,child: Text(getTotalExpense(_registeredExpenses).toStringAsFixed(2)))),
+                              ],
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-                Flexible(child: mainContent),
-              ],
-            ),
-          )
+          ),
         ],
       ),
     );
