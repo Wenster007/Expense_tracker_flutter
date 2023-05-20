@@ -1,7 +1,7 @@
 import 'package:expense_tracker2/widgets/buttons_row.dart';
 import 'package:expense_tracker2/widgets/expenses_list/expenses_list.dart';
 import 'package:expense_tracker2/widgets/new_expense.dart';
-import 'package:expense_tracker2/widgets/total/total_list.dart';
+import 'package:expense_tracker2/widgets/summary.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker2/model/expense.dart';
 import 'package:expense_tracker2/widgets/chart/chart.dart';
@@ -38,7 +38,9 @@ class _ExpensesState extends State<Expenses> {
   @override
   void initState() {
     currentButton = ButtonRow(
-        onExpenseClick: _onExpenseButton, onSummaryClick: _onSummaryButtons,);
+      onExpenseClick: _onExpenseButton,
+      onSummaryClick: _onSummaryButtons,
+    );
     super.initState();
   }
 
@@ -128,7 +130,8 @@ class _ExpensesState extends State<Expenses> {
 
     setState(() {
       currentButton = ButtonRow(
-        onExpenseClick: _onExpenseButton,onSummaryClick: _onSummaryButtons,
+        onExpenseClick: _onExpenseButton,
+        onSummaryClick: _onSummaryButtons,
       );
     });
   }
@@ -139,9 +142,9 @@ class _ExpensesState extends State<Expenses> {
     }
 
     setState(() {
-      currentButton = ButtonRow(onExpenseClick: _onExpenseButton, onSummaryClick: _onSummaryButtons);
+      currentButton = ButtonRow(
+          onExpenseClick: _onExpenseButton, onSummaryClick: _onSummaryButtons);
     });
-
   }
 
   double getTotalExpense(List<Expense> expenses) {
@@ -153,6 +156,9 @@ class _ExpensesState extends State<Expenses> {
 
     return sum;
   }
+
+  
+  
 
   @override
   Widget build(BuildContext context) {
@@ -201,36 +207,7 @@ class _ExpensesState extends State<Expenses> {
                       Flexible(child: mainContent),
                     ],
                   )
-                : Container(
-                    margin: const EdgeInsets.all(25),
-                    width: double.infinity,
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Column(
-                        children: [
-                          const Text("Total Expense"),
-                          const SizedBox(height: 30,),
-                          Row(
-                            children: const [
-                              Expanded(child: Text("Expenses List: ",),),
-                              Expanded(child: Text("Total",)),
-                            ],
-                          ),
-                          const SizedBox(height: 10,),
-                          Flexible(
-                            child: Row(
-                              children: [
-                                Expanded(child: TotalList(expenses: _currentActiveExpenseList),),
-                                Expanded(child: Container(alignment: Alignment.topLeft,child: Text(getTotalExpense(_registeredExpenses).toStringAsFixed(2)))),
-                              ],
-                            ),
-                          ),
-
-                        ],
-                      ),
-                    ),
-                  ),
+                : Summary(totalExpense: _currentActiveExpenseList),
           ),
         ],
       ),
