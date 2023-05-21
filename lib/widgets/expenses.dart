@@ -1,4 +1,5 @@
 import 'package:expense_tracker2/widgets/buttons_row.dart';
+import 'package:expense_tracker2/widgets/display_list_of_expenses.dart';
 import 'package:expense_tracker2/widgets/expenses_list/expenses_list.dart';
 import 'package:expense_tracker2/widgets/new_expense.dart';
 import 'package:expense_tracker2/widgets/summary.dart';
@@ -190,23 +191,7 @@ class _ExpensesState extends State<Expenses> {
           ),
           Expanded(
             child: (active1 == true)
-                ? Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        child: Row(
-                          children: [
-                            const Spacer(),
-                            IconButton(
-                              onPressed: _toggleExpenseList,
-                              icon: const Icon(Icons.sort),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Flexible(child: mainContent),
-                    ],
-                  )
+                ? DisplayListOfExpenses(toggleExpenseList: _toggleExpenseList, mainContent: mainContent,)
                 : Summary(totalExpense: _currentActiveExpenseList),
           ),
         ],
